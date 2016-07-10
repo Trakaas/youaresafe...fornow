@@ -87,8 +87,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	img := solidImage(1000, 500, 255, 0, 0, 255)
-	img2 := solidImage(500, 150, 0, 120, 255, 128)
+	img := solidImage(1000, 500, 255, 0, 0, 128)
+	img2 := solidImage(500, 150, 0, 120, 255, 255)
 
 	AlphaBlend(img, img2)
 
