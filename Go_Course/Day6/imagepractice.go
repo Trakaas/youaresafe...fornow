@@ -41,7 +41,7 @@ func compositeColor(apparentColor, compositeAlpha byte) byte {
 }
 
 func compositeAlpha(alpha, bgAlpha byte) byte {
-	compositeAlpha := float64(alpha) + float64(alpha)*float64(bgAlpha)
+	compositeAlpha := float64(alpha) + (1.0-float64(alpha))*float64(bgAlpha)
 	return byte(compositeAlpha)
 }
 
@@ -57,9 +57,9 @@ func AlphaBlend(top *image.NRGBA, bottom *image.NRGBA) {
 	maxY := int(math.Min(float64(topBounds.Max.Y), float64(bottomBounds.Max.Y)))
 	fmt.Println(maxY)
 	rect := image.Rect(minX, minY, maxX, maxY)
-	img := image.NewNRGBA(rect)
-	for y := rect.Min.Y; y < rect.Max.Y; y++ {
-		for x := rect.Min.X; x < rect.Max.X; x++ {
+	img := image.NewRGBA(rect)
+	for y := minY; y < maxY; y++ {
+		for x := minX; x < maxX; x++ {
 			topIdx := top.Stride*y + x*4
 			bottomIdx := bottom.Stride*y + x*4
 			idx := img.Stride*y + x*4
@@ -72,8 +72,8 @@ func AlphaBlend(top *image.NRGBA, bottom *image.NRGBA) {
 					top.Pix[topIdx+3],
 					bottom.Pix[bottomIdx+3],
 				)
-				cC := aC / cA
-				top.Pix[idx+i] = cC
+				cC := aC // cA
+				top.Pix[topIdx+i] = cC
 			}
 		}
 	}
@@ -88,12 +88,9 @@ func main() {
 		return
 	}
 	img := solidImage(1000, 500, 255, 0, 0, 255)
-	img2 := solidImage(500, 150, 0, 255, 0, 128)
+	img2 := solidImage(500, 150, 0, 120, 255, 128)
 
 	AlphaBlend(img, img2)
-	var newCol []byte
-	fmt.Println(newCol)
-	//drawSolidColorRect(img, img2.Bounds(), 0, 0, 255, 255)
 
 	png.Encode(fid, img)
 }
